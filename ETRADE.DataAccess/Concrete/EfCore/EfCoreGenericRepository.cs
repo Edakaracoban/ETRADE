@@ -8,7 +8,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ETRADE.DataAccess.Concrete.EfCore
+namespace ETRADE.DataAccess.Concrete.EfCore //Dataacces katmanı veri tabanına bağlanıp CRUD(create-read-update-delete) işlemlerini yapar
 {
     public class EfCoreGenericRepository<T, TContext> : IRepository<T> where T : class where TContext : DbContext, new()
     {
@@ -17,7 +17,8 @@ namespace ETRADE.DataAccess.Concrete.EfCore
             using (var context = new TContext())
             {
                 context.Set<T>().Add(entity);
-                context.SaveChanges();
+                context.SaveChanges(); //SaveChanges;insert,update,delete sorgularını oluşturup bir transaction
+                //eşliğinde veritabanına gönderip execute eden fonksiyondur.
             }
         }
 
@@ -45,12 +46,12 @@ namespace ETRADE.DataAccess.Concrete.EfCore
                 return context.Set<T>().Find(id);
             }
         }
-
+        // changetracker değişiklikleri takip eder ve değişiklikleri veritabanına yansıtır
         public T GetOne(Expression<Func<T, bool>> filter = null)
         {
             using (var context = new TContext())
             {
-                return context.Set<T>().Where(filter).FirstOrDefault();
+                return context.Set<T>().Where(filter).FirstOrDefault();//verdiğimiz şarta uygun verilerin arasından ilkini getirir
             }
         }
 

@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace ETRADE.DataAccess.Abstract
 {
-    public interface ICartDal :IRepository<Cart>
+    public interface ICartDal :IRepository<Cart> // Interface arası implementasyon yapılmasına gerek yok.Sadece miras alınır.
     {
         void ClearCart(string cartId); //sipariş verildikten sonra sepet temizleme
-        void DeleteFromCart(string cartId,int productId); //sepetten ürün silme
+        void DeleteFromCart(int cartId,int productId); //sepetten ürün silme
         Cart GetCartByUserId(string userId);                                          
     }
 }

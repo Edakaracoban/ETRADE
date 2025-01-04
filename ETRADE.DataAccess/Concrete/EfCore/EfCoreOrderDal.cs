@@ -24,7 +24,7 @@ namespace ETRADE.DataAccess.Concrete.EfCore
                 {
                     orders=orders.Where(i => i.UserId == userId);
                 }
-                return orders.ToList(); 
+                return orders.ToList(); //ToList fonksiyonu sorguyu çalıştırır ve sonucu liste halinde döndürür
             }
 
         }

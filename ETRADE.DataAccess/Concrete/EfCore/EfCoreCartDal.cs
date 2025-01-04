@@ -20,7 +20,7 @@ namespace ETRADE.DataAccess.Concrete.EfCore //sepetle ilgili CRUD İŞLEMLERİ
             }
         }
 
-        public void DeleteFromCart(string cartId, int productId) //spesific silme
+        public void DeleteFromCart(int cartId, int productId) //spesific silme
         {
             using (var context = new DataContext())
             {
@@ -49,5 +49,6 @@ namespace ETRADE.DataAccess.Concrete.EfCore //sepetle ilgili CRUD İŞLEMLERİ
                 context.SaveChanges();
             }
         }
+
     }
 }

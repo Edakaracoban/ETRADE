@@ -57,9 +57,9 @@ namespace ETRADE.DataAccess.Concrete.EfCore
                 }
                 return products.Skip((page - 1) * pageSize).Take(pageSize).ToList();
             }
-        }
+        } 
 
-        public void Update(Product entity, int[] categoryIds)
+        public void Update(Product entity, int[] categoryIds) //update fonksiyonu kullanabilmek için kesinlikle ilgili nesnede id olmalı
         {
             using (var context = new DataContext())
             {
@@ -68,7 +68,7 @@ namespace ETRADE.DataAccess.Concrete.EfCore
                             .FirstOrDefault(i => i.Id == entity.Id);
                 if (products is not null)
                 {
-                    context.Images.RemoveRange(context.Images.Where(i => i.ProductId == entity.Id)).ToList();
+                    context.Images.RemoveRange(context.Images.Where(i => i.ProductId == entity.Id));
                     products.Price = entity.Price;
                     products.Name = entity.Name;
                     products.Description = entity.Description;
@@ -80,13 +80,13 @@ namespace ETRADE.DataAccess.Concrete.EfCore
                     products.Images = entity.Images;
                 }
                 context.SaveChanges();
-            }
+            } 
         }
         public override void Delete(Product entity)
         {
             using (var context = new DataContext())
             {
-                context.Images.RemoveRange(entity.Images);
+                context.Images.RemoveRange(entity.Images); // RemoveRange ile birden fazla veri silme işlemi yapılabilir
                 context.Products.Remove(entity);
                 context.SaveChanges();
 
@@ -95,3 +95,4 @@ namespace ETRADE.DataAccess.Concrete.EfCore
     }
 }
 
+// find() fonksiyonu primary key kolonuna özel hızlı bir arama sorgusu yapar.

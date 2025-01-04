@@ -30,7 +30,7 @@ namespace ETRADE.DataAccess.Concrete.EfCore
                        .Include(i => i.ProductCategories)
                        .ThenInclude(i => i.Product)
                        .ThenInclude(i => i.Images)
-                       .FirstOrDefault();
+                       .FirstOrDefault();// Sorgu neticesinde elde edilen verilerden ilkini getirir eğer veri yoksa null döner.
             }
         }
         public override void Delete(Category entity)
