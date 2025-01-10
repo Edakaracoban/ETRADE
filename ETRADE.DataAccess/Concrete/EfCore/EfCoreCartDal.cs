@@ -29,15 +29,15 @@ namespace ETRADE.DataAccess.Concrete.EfCore //sepetle ilgili CRUD İŞLEMLERİ
             }
         }
 
-        public Cart GetCartByUserId(string userId) //useridye göre cart getirecek
+        public Cart GetCartByUserId(string userId)
         {
             using (var context = new DataContext())
             {
-                return context.Carts //sepet tablosuna git
-                    .Include(i => i.CartItems) //eğer içinde bir şeyler varsa
-                    .ThenInclude(i => i.Product) //içinde product varsa
-                    .ThenInclude(i => i.Images) //resimleri varsa
-                    .FirstOrDefaultAsync(i => i.UserId == userId);//gönderdiğim kullanıcı idye göre sepeti döndür.
+                return context.Carts
+                       .Include(i => i.CartItems)
+                       .ThenInclude(i => i.Product)
+                       .ThenInclude(i => i.Images)
+                       .FirstOrDefault(i => i.UserId == userId);
             }
         }
 

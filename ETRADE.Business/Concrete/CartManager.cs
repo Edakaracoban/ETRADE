@@ -11,7 +11,8 @@ namespace ETRADE.Business.Concrete
 {
     public class CartManager : ICartService
     {
-        private ICartDal _cartDal; // Dependency Injection
+        private ICartDal _cartDal;
+
         public CartManager(ICartDal cartDal)
         {
             _cartDal = cartDal;
@@ -19,11 +20,12 @@ namespace ETRADE.Business.Concrete
 
         public void AddToCart(string userId, int productId, int quantity)
         {
-            var cart = GetCartByUserId(userId); // Kullanıcıya ait sepeti getir.
+            var cart = GetCartByUserId(userId);
+
             if (cart is not null)
             {
-                var index = cart.CartItems.FindIndex(x => x.ProductId == productId);//sepette ürün var mı? 
-                //sepette o ürün yoksa
+                var index = cart.CartItems.FindIndex(x => x.ProductId == productId);
+
                 if (index < 0)
                 {
                     cart.CartItems.Add(
@@ -35,12 +37,13 @@ namespace ETRADE.Business.Concrete
                         }
                     );
                 }
-                else //sepette o ürün varsa
+                else
                 {
                     cart.CartItems[index].Quantity += quantity;
                 }
             }
-            _cartDal.Update(cart); // DataAcces aracılığıyla sepeti günceller.IRepository'den gelen metot.Somutlaştırıldı.
+
+            _cartDal.Update(cart); // Dataaccess aracılığıyla sepeti günceller.
         }
 
         public void ClearCart(string cartId)
@@ -51,6 +54,7 @@ namespace ETRADE.Business.Concrete
         public void DeleteFromCart(string userId, int productId)
         {
             var cart = GetCartByUserId(userId);
+
             if (cart != null)
             {
                 _cartDal.DeleteFromCart(cart.Id, productId);
@@ -62,14 +66,14 @@ namespace ETRADE.Business.Concrete
             return _cartDal.GetCartByUserId(userId);
         }
 
-        public void InitialCart(string userId) // Cart'ı ilk haline getir.
+        public void InitialCart(string userId)
         {
             Cart cart = new Cart()
             {
                 UserId = userId,
             };
             _cartDal.Create(cart);
-
         }
     }
+
 }
