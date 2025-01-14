@@ -40,7 +40,7 @@ namespace ETRADE.WebUI.Controllers
                 Email = model.Email,
                 FullName = model.FullName
             };
-            var result = await _userManager.CreateAsync(user, model.Password);
+            var result = await _userManager.CreateAsync(user, model.Password);//password hashlenmiş olarak tutulur.
 
             if (result.Succeeded)
             {
@@ -60,7 +60,7 @@ namespace ETRADE.WebUI.Controllers
                 MailHelper.SendEmail(body, model.Email, "ETRADE Hesap Aktifleştirme Onayı");//mailhelper sınıfı static olduğu için direkt adı ile erişim sağlayabiliriz.
                 return RedirectToAction("Login", "Account");
             }
-            
+
             return View(model);
         }
         public async Task<IActionResult> ConfirmEmail(string userId, string token) //callback url dönecek.
@@ -99,5 +99,175 @@ namespace ETRADE.WebUI.Controllers
             });
             return Redirect("~");//anasayfaya yönlendir.
         }
+
+        public IActionResult Login(string returnUrl = null) //default değeri null
+        {
+            return View(
+                new LoginModel()
+                {
+                    ReturnUrl = returnUrl
+                }
+             );
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginModel model)
+        {
+            ModelState.Remove("ReturnUrl");
+            if (!ModelState.IsValid)
+            {
+                TempData.Put("message", new ResultModel()
+                {
+                    Title = "Giriş Bilgileri",
+                    Message = "Bilgileriniz Hatalıdır",
+                    Css = "danger"
+                });
+                return View(model);
+            }
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+
+            if (user is null)
+            {
+                ModelState.AddModelError("", "Bu email adresi ile kayıtlı kullanıcı bulunamadı");
+                return View(model);
+            }
+            var result = await _signInManager.PasswordSignInAsync(user, model.Password, true, true);
+            if (result.Succeeded)
+            {
+                return Redirect(model.ReturnUrl ?? "~/");
+            }
+            else if (result.IsLockedOut)
+            {
+                TempData.Put("message", new ResultModel()
+                {
+                    Title = "Hesap Kilitlendi",
+                    Message = "Hesabınız geçici olarak kilitlenmiştir. Lütfen 5 dk sonra tekrar deneyin.",
+                    Css = "danger"
+                });
+                return View(model);
+            }
+
+            ModelState.AddModelError("", "Email veya şifre hatalı");
+
+            return View(model);
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            TempData.Put("message", new ResultModel()
+            {
+                Title = "Oturum Hesabı Kapatıldı",
+                Message = "Hesabınız güvenli bir şekilde sonlandırıldı",
+                Css = "success"
+            });
+            return Redirect("~/");
+        }
+
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                TempData.Put("message", new ResultModel()
+                {
+                    Title = "Şifremi Unuttum",
+                    Message = "Lütfen Email adresini boş bırakmayınız",
+                    Css = "danger"
+                });
+
+                return View();
+            }
+
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user != null)
+            {
+                var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var callbackUrl = Url.Action("ResetPassword", "Account", new
+                {
+                    userId = user.Id,
+                    token = code
+                });
+                string siteUrl = "https://localhost:7076";
+                string resetUrl = $"{siteUrl}{callbackUrl}";
+                //send email
+                string body = $"Şifrenizi yenilemek için linke <a href='{resetUrl}'> tıklayınız.</a>"; //tıklayınıza hperlink oluşturur.
+                //Email Service
+                MailHelper.SendEmail(body, email, "ETRADE Şifre Sıfırlama");//mailhelper sınıfı static olduğu için direkt adı ile erişim sağlayabiliriz.
+                TempData.Put("message", new ResultModel()
+                {
+                    Title = "Şifre Sıfırlama",
+                    Message = "Şifre sıfırlama linki email adresinize gönderilmiştir.",
+                    Css = "success"
+                });
+                return RedirectToAction("Login");
+            }
+            TempData.Put("message", new ResultModel()
+            {
+                Title = "Şifremi Unuttum",
+                Message = "Bu email adresi ile kayıtlı kullanıcı bulunamadı",
+                Css = "danger"
+            });
+            return View();
+        }
+        public IActionResult ResetPassword(string token)
+        {
+            if (token == null)
+            {
+                return RedirectToAction("Home", "Index");
+            }
+
+            var model = new ResetPasswordModel { Token = token };
+
+            return View(model);
+        }
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+
+            if (user is null)
+            {
+                TempData.Put("message", new ResultModel()
+                {
+                    Title = "Şifremi Unuttum",
+                    Message = "Bu Email adresi ile kullanıcı bulunamadı.",
+                    Css = "danger"
+                });
+                return RedirectToAction("Home", "Index");
+            }
+
+            var result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
+
+            if (result.Succeeded)
+            {
+                return RedirectToAction("Login");
+            }
+            else
+            {
+                TempData.Put("message", new ResultModel()
+                {
+                    Title = "Şifremi Unuttum",
+                    Message = "Şifreniz uygun değildir.",
+                    Css = "danger"
+                });
+
+                return View(model);
+            }
+        }
+
+
     }
 }
