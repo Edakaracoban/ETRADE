@@ -5,6 +5,7 @@ using ETRADE.WebUI.Identity;
 using ETRADE.WebUI.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using System.Net.Mail;
 
 namespace ETRADE.WebUI.Controllers
@@ -268,6 +269,113 @@ namespace ETRADE.WebUI.Controllers
             }
         }
 
+        //ödev
+        //Account/manage sayfası oluşturulacak bilgiler dolu bir şekilde girilecek.//email/username/fullname değiştirilecek
+        public async Task<IActionResult> Manage()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                TempData.Put("message", new ResultModel()
+                {
+                    Title = "Bağlantı Hatası",
+                    Message = "Kullanıcı bilgileri bulunamadı tekrar deneyin.",
+                    Css = "danger"
+                });
+                return View();
+            }
 
+            var model = new AccountModel
+            {
+                FullName = user.FullName,
+                UserName = user.UserName,
+                Email = user.Email
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Manage(AccountModel model)
+        {
+
+            if (!ModelState.IsValid)
+            {
+
+                TempData.Put("message", new ResultModel()
+                {
+                    Title = "Giriş Bilgileri",
+                    Message = "Bilgileriniz Hatalıdır",
+                    Css = "danger"
+                });
+
+                return View(model);
+            }
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                TempData["message"] = new ResultModel()
+                {
+                    Title = "Bağlantı Hatası",
+                    Message = "Kullanıcı bilgileri bulunamadı, lütfen tekrar deneyin.",
+                    Css = "danger"
+                };
+                return RedirectToAction("Login", "Account");
+            }
+        
+
+
+
+            user.FullName = model.FullName;
+            user.UserName = model.UserName;
+            user.Email = model.Email;
+            if (model.Email != user.Email)
+            {
+                var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var callbackUrl = Url.Action("ResetPassword", "Account", new
+                {
+                    userId = user.Id,
+                    token = code
+                });
+                string siteUrl = "https://localhost:7076";
+                string resetUrl = $"{siteUrl}{callbackUrl}";
+                //send email
+                string body = $"Şifrenizi yenilemek için linke <a href='{resetUrl}'> tıklayınız.</a>"; //tıklayınıza hperlink oluşturur.
+                //Email Service
+                MailHelper.SendEmail(body,model.Email, "ETRADE Şifre Sıfırlama");//mailhelper sınıfı static olduğu için direkt adı ile erişim sağlayabiliriz.
+                TempData.Put("message", new ResultModel()
+                {
+                    Title = "Şifre Sıfırlama",
+                    Message = "Şifre sıfırlama linki email adresinize gönderilmiştir.",
+                    Css = "success"
+                });
+                return RedirectToAction("Login");
+            }
+
+
+            var result = await _userManager.UpdateAsync(user);
+
+
+            if (result.Succeeded)
+            {
+                TempData.Put("message", new ResultModel()
+                {
+                    Title = "Hesap Bilgileri Güncellendi",
+                    Message = "Bilgileriniz başarıyla güncellenmiştir.",
+                    Css = "success"
+                });
+                return RedirectToAction("Index", "Home");
+            }
+
+            TempData.Put("message", new ResultModel()
+            {
+                Title = "Hata",
+                Message = "Bilgileriniz güncellenemedi. Lütfen tekrar deneyin.",
+                Css = "danger"
+            });
+            return View(model);
+        }
     }
+
+
 }
+
