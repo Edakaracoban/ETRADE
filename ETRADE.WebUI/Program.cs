@@ -6,6 +6,7 @@ using ETRADE.DataAccess.Concrete.EfCore;
 
 //using ETRADE.WebUI.Middlewares;
 using ETRADE.WebUI.Identity;
+using ETRADE.WebUI.Middlewares;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -89,7 +90,7 @@ SeedDatabase.Seed();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-//Middleware
+app.CustomStaticFiles(); //middleware node_modules dosyalarýný kullanabilmek için(moduls klasörüne eriþim)
 
 
 app.UseAuthentication(); //kimlik doðrulama iþlemleri
