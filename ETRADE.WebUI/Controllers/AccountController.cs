@@ -268,9 +268,6 @@ namespace ETRADE.WebUI.Controllers
                 return View(model);
             }
         }
-
-        //ödev
-        //Account/manage sayfası oluşturulacak bilgiler dolu bir şekilde girilecek.//email/username/fullname değiştirilecek
         public async Task<IActionResult> Manage()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -321,13 +318,14 @@ namespace ETRADE.WebUI.Controllers
                 };
                 return RedirectToAction("Login", "Account");
             }
-        
+
 
 
 
             user.FullName = model.FullName;
             user.UserName = model.UserName;
             user.Email = model.Email;
+
             if (model.Email != user.Email)
             {
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
@@ -339,9 +337,9 @@ namespace ETRADE.WebUI.Controllers
                 string siteUrl = "https://localhost:7076";
                 string resetUrl = $"{siteUrl}{callbackUrl}";
                 //send email
-                string body = $"Şifrenizi yenilemek için linke <a href='{resetUrl}'> tıklayınız.</a>"; //tıklayınıza hperlink oluşturur.
-                //Email Service
-                MailHelper.SendEmail(body,model.Email, "ETRADE Şifre Sıfırlama");//mailhelper sınıfı static olduğu için direkt adı ile erişim sağlayabiliriz.
+                string body = $"Şifrenizi yenilemek için linke <a href='{resetUrl}'> tıklayınız.</a>";
+
+                MailHelper.SendEmail(body, model.Email, "ETRADE Şifre Sıfırlama");
                 TempData.Put("message", new ResultModel()
                 {
                     Title = "Şifre Sıfırlama",
@@ -350,7 +348,6 @@ namespace ETRADE.WebUI.Controllers
                 });
                 return RedirectToAction("Login");
             }
-
 
             var result = await _userManager.UpdateAsync(user);
 
@@ -374,6 +371,7 @@ namespace ETRADE.WebUI.Controllers
             });
             return View(model);
         }
+
     }
 
 

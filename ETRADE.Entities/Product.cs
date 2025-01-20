@@ -1,4 +1,6 @@
-﻿namespace ETRADE.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ETRADE.Entities
 {
     public class Product
     {
@@ -6,6 +8,8 @@
         public string Name { get; set; }
         public string Description { get; set; }
         public List<Image> Images { get; set; }
+        [Required]
+        [Range(0, double.MaxValue, ErrorMessage = "Fiyat geçerli bir değer olmalıdır. Lütfen pozitif bir sayı giriniz.")]
         public decimal Price { get; set; }
         public List<ProductCategory> ProductCategories { get; set; }
         public List<Comment> Comments { get; set; }
