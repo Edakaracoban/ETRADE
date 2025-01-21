@@ -37,7 +37,7 @@ namespace ETRADE.DataAccess.Concrete.EfCore
                 return context.Products
                         .Where(i => i.Id == id)
                         .Include("Images")
-                        .Include("Comment")
+                        .Include("Comments")
                         .Include(i => i.ProductCategories)
                         .ThenInclude(i => i.Category)
                         .FirstOrDefault();
@@ -58,36 +58,54 @@ namespace ETRADE.DataAccess.Concrete.EfCore
                 }
                 return products.Skip((page - 1) * pageSize).Take(pageSize).ToList();
             }
-        } 
-
-        public void Update(Product entity, int[] categoryIds) //update fonksiyonu kullanabilmek için kesinlikle ilgili nesnede id olmalı
+        }
+        public void Update(Product entity, int[] categoryIds)
         {
             using (var context = new DataContext())
             {
-                var products = context.Products
-                            .Include(i => i.ProductCategories)
-                            .FirstOrDefault(i => i.Id == entity.Id);
-                if (products is not null)
+                var product = context.Products
+                    .Include(p => p.ProductCategories)
+                    .Include(p => p.Images)
+                    .FirstOrDefault(p => p.Id == entity.Id);
+
+                if (product != null)
                 {
-                    context.Images.RemoveRange(context.Images.Where(i => i.ProductId == entity.Id));
-                    products.Price = entity.Price;
-                    products.Name = entity.Name;
-                    products.Description = entity.Description;
-                    products.ProductCategories = categoryIds.Select(catId => new ProductCategory()
+                    product.Name = entity.Name;
+                    product.Description = entity.Description;
+                    product.Price = entity.Price;
+
+                    product.ProductCategories = categoryIds.Select(catId => new ProductCategory
                     {
                         ProductId = entity.Id,
-                        CategoryId = catId,
+                        CategoryId = catId
                     }).ToList();
-                    products.Images = entity.Images;
+
+                    // Eski resimleri veritabanından sil
+                    var oldImages = context.Images.Where(i => i.ProductId == entity.Id).ToList();
+                    if (oldImages.Any())
+                    {
+                        context.Images.RemoveRange(oldImages);
+
+                    }
+
+
+                    // Yeni resimleri veritabanına ekle
+                    if (entity.Images.Any())
+                    {
+                        foreach (var image in entity.Images)
+                        {
+                            context.Images.Add(image); 
+                        }
+                    }
+                    context.SaveChanges(); 
                 }
-                context.SaveChanges();
-            } 
+            }
         }
         public override void Delete(Product entity)
         {
             using (var context = new DataContext())
             {
-                context.Images.RemoveRange(entity.Images); // RemoveRange ile birden fazla veri silme işlemi yapılabilir
+                context.Images.RemoveRange(entity.Images);
                 context.Products.Remove(entity);
                 context.SaveChanges();
 

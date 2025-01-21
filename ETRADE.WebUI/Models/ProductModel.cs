@@ -15,6 +15,7 @@ namespace ETRADE.WebUI.Models
         [Required]
         [Range(0, double.MaxValue, ErrorMessage = "Fiyat geçerli bir değer olmalıdır. Lütfen pozitif bir sayı giriniz.")]
         public decimal Price { get; set; }
+        [Required]
         public List<Image> Images { get; set; }
         public List<Category> SelectedCategories { get; set; }
         public string CategoryId { get; set; }
@@ -22,5 +23,6 @@ namespace ETRADE.WebUI.Models
         {
             Images = new List<Image>();
         }
+        
     }
 }

@@ -52,7 +52,7 @@ namespace ETRADE.Business.Concrete
             return _productDal.GetProductDetails(id);
         }
 
-        public void Update(Product entity)
+        public void Update(Product entity, int[] categoryIds)
         {
             _productDal.Update(entity); 
         }
