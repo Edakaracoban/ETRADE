@@ -100,7 +100,7 @@ app.UseAuthentication(); //kimlik doðrulama iþlemleri
 app.UseAuthorization(); //yetkilendirme iþlemleri
 app.UseRouting();
 
-//endpoints
+// endpoints
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}");
@@ -119,33 +119,33 @@ app.UseEndpoints(endpoints =>
         name: "adminProducts",
         pattern: "admin/products/{id}",
         defaults: new { controller = "Admin", action = "EditProduct" }
-
     );
     endpoints.MapControllerRoute(
-       name: "adminProducts",
-       pattern: "admin/category",
-       defaults: new { controller = "Admin", action = "CategoryList" }
+         name: "adminProducts",
+         pattern: "admin/category",
+         defaults: new { controller = "Admin", action = "CategoryList" }
     );
     endpoints.MapControllerRoute(
         name: "adminProducts",
-        pattern: "admin/category/{id}",
+        pattern: "admin/categories/{id}",
         defaults: new { controller = "Admin", action = "EditCategory" }
-     );
+    );
     endpoints.MapControllerRoute(
         name: "cart",
         pattern: "cart",
         defaults: new { controller = "Cart", action = "Index" }
-     );
+    );
     endpoints.MapControllerRoute(
         name: "checkout",
         pattern: "checkout",
         defaults: new { controller = "Cart", action = "Checkout" }
-     );
-    endpoints.MapControllerRoute(
-        name: "orders",
-        pattern: "orders",
-        defaults: new { controller = "Cart", action = "GetOrders" }
     );
+    endpoints.MapControllerRoute(
+       name: "orders",
+       pattern: "orders",
+       defaults: new { controller = "Cart", action = "GetOrders" }
+   );
+
 }
 );
 

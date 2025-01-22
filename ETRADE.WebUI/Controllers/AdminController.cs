@@ -160,7 +160,7 @@ namespace ETRADE.WebUI.Controllers
             entity.Description = model.Description;
             entity.Price = model.Price;
 
-            if (files != null && files.Count> 0)
+            if (files != null && files.Count > 0)
             {
                 using (var context = new DataContext())
                 {
@@ -170,11 +170,11 @@ namespace ETRADE.WebUI.Controllers
                 }
                 foreach (var file in files)
                 {
-          
+
                     var image = new Image
                     {
-                        ImageUrl = file.FileName, 
-                        ProductId = entity.Id 
+                        ImageUrl = file.FileName,
+                        ProductId = entity.Id
                     };
 
                     entity.Images.Add(image);
@@ -194,11 +194,56 @@ namespace ETRADE.WebUI.Controllers
             using (var context = new DataContext())
             {
                 context.Images.AddRange(entity.Images);
-                await context.SaveChangesAsync();  
+                await context.SaveChangesAsync();
             }
             return RedirectToAction("ProductList");
         }
 
+        [HttpPost]
+        public IActionResult DeleteProduct(int productId)
+        {
+            var product = _productService.GetById(productId);
+            if (product != null)
+            {
+                _productService.Delete(product);
+            }
+            return RedirectToAction("ProductList");
+        }
+        public IActionResult CategoryList()
+        {
+            return View(new CategoryListModel() { Categories = _categoryService.GetAll() });
+        }
+
+        public IActionResult EditCategory(int? id)
+        {
+            var entity = _categoryService.GetByWithProducts(id.Value);
+
+            return View(
+                    new CategoryModel()
+                    {
+                        Id = entity.Id,
+                        Name = entity.Name,
+                        Products = entity.ProductCategories.Select(i => i.Product).ToList()
+                    }
+                );
+        }
+
+
+        [HttpPost]
+        public IActionResult EditCategory(CategoryModel model)
+        {
+            var entity = _categoryService.GetById(model.Id);
+
+            if (entity == null)
+            {
+                return NotFound();
+            }
+
+            entity.Name = model.Name;
+            _categoryService.Update(entity);
+
+            return RedirectToAction("CategoryList");
+        }
 
 
 
