@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ETICARET.DataAccess.Concrete.EfCore
+namespace ETRADE.DataAccess.Concrete.EfCore
 {
     public class SeedDatabase
     {
