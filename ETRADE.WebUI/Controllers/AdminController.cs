@@ -18,18 +18,16 @@ namespace ETRADE.WebUI.Controllers
         private ICategoryService _categoryService;
         private UserManager<ApplicationUser> _userManager;
         private RoleManager<IdentityRole> _roleManager;
-        private IWebHostEnvironment _webHostEnvironment;
 
-        public AdminController(IProductService productService, ICategoryService categoryService, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IWebHostEnvironment webHostEnvironment)
+        public AdminController(IProductService productService, ICategoryService categoryService, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _productService = productService;
             _categoryService = categoryService;
             _userManager = userManager;
             _roleManager = roleManager;
-            _webHostEnvironment = webHostEnvironment;
         }
 
-        //productları listeleyecek
+
         [Route("admin/products")]
         public IActionResult ProductList()
         {
@@ -38,17 +36,14 @@ namespace ETRADE.WebUI.Controllers
                 {
                     Products = _productService.GetAll()
                 }
-            );
+             );
         }
 
         public IActionResult CreateProduct()
         {
             var category = _categoryService.GetAll();
-            ViewBag.Category = category.Select(x => new SelectListItem()
-            {
-                Text = x.Name,
-                Value = x.Id.ToString()
-            });
+            ViewBag.Category = category.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() });
+
             return View(new ProductModel());
         }
 
@@ -56,17 +51,15 @@ namespace ETRADE.WebUI.Controllers
         public async Task<IActionResult> CreateProduct(ProductModel model, List<IFormFile> files)
         {
             ModelState.Remove("SelectedCategories");
+
             if (ModelState.IsValid)
             {
                 if (int.Parse(model.CategoryId) == -1)
                 {
                     ModelState.AddModelError("", "Lütfen bir kategori seçiniz.");
 
-                    ViewBag.Category = _categoryService.GetAll().Select(x => new SelectListItem()
-                    {
-                        Text = x.Name,
-                        Value = x.Id.ToString()
-                    });
+                    ViewBag.Category = _categoryService.GetAll().Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() });
+
                     return View(model);
                 }
 
@@ -75,51 +68,49 @@ namespace ETRADE.WebUI.Controllers
                     Name = model.Name,
                     Description = model.Description,
                     Price = model.Price
-
                 };
 
-                if (files.Count > 0 && files != null)
+                if (files.Count < 4 || files == null)
                 {
-                    if (files.Count < 4)
+                    ModelState.AddModelError("", "Lütfen en az 4 resim yükleyin.");
+                    ViewBag.Category = _categoryService.GetAll().Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() });
+                    return View(model);
+                }
+                foreach (var item in files)
+                {
+                    Image image = new Image();
+                    image.ImageUrl = item.FileName;
+
+                    entity.Images.Add(image);
+
+                    var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\img", item.FileName);
+
+                    using (var stream = new FileStream(path, FileMode.Create))
                     {
-                        ModelState.AddModelError("", "Lütfen en az 4 resim yükleyin.");
-                        ViewBag.Category = _categoryService.GetAll().Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() });
-                        return View(model);
-                    }
-                    foreach (var item in files)
-                    {
-                        Image image = new Image();
-                        image.ImageUrl = item.FileName;
-
-                        entity.Images.Add(image);
-
-                        var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\img", item.FileName);
-
-                        using (var stream = new FileStream(path, FileMode.Create))
-                        {
-                            await item.CopyToAsync(stream);
-                        }
+                        await item.CopyToAsync(stream);
                     }
                 }
 
-                entity.ProductCategories = new List<ProductCategory>()
-                {
-                    new ProductCategory { CategoryId = int.Parse(model.CategoryId), ProductId = entity.Id }
-                };
+
+                entity.ProductCategories = new List<ProductCategory> { new ProductCategory { CategoryId = int.Parse(model.CategoryId), ProductId = entity.Id } };
+
                 _productService.Create(entity);
+
                 return RedirectToAction("ProductList");
             }
-            ViewBag.Category = _categoryService.GetAll().Select(x => new SelectListItem()
-            {
-                Text = x.Name,
-                Value = x.Id.ToString()
-            });
+
+            ViewBag.Category = _categoryService.GetAll().Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() });
+
+
             return View(model);
+
         }
-        // Not : Önyüzde 4 resmi değiştirmeden kayıt edersek hata vermiyor.4 resmin 4 ünü de değiştirmessek yani yalnızca 1 veya 2 resim değişikliği yaparsak hata veriyor.
+
+
         public IActionResult EditProduct(int id)
+
         {
-            if (id == 0) // null yerine 0 kontrolü
+            if (id == null)
             {
                 return NotFound();
             }
@@ -137,19 +128,29 @@ namespace ETRADE.WebUI.Controllers
                 Name = entity.Name,
                 Description = entity.Description,
                 Price = entity.Price,
-                Images = entity.Images.ToList(), // entitydeki resimler birden fazla olduğu için listeledik.
+                Images = entity.Images,
                 SelectedCategories = entity.ProductCategories.Select(i => i.Category).ToList()
             };
 
             ViewBag.Categories = _categoryService.GetAll();
 
             return View(model);
+
+
         }
 
         [HttpPost]
         public async Task<IActionResult> EditProduct(ProductModel model, List<IFormFile> files, int[] categoryIds)
         {
+            if (categoryIds == null || categoryIds.Length == 0)
+            {
+                ModelState.AddModelError("", "Lütfen en az bir kategori seçiniz.");
+                ViewBag.Categories = _categoryService.GetAll();
+                return View(model); 
+            }
+
             var entity = _productService.GetById(model.Id);
+          
 
             if (entity == null)
             {
@@ -159,28 +160,18 @@ namespace ETRADE.WebUI.Controllers
             entity.Name = model.Name;
             entity.Description = model.Description;
             entity.Price = model.Price;
+            entity.Images = model.Images;
 
             if (files != null && files.Count > 0)
             {
-                using (var context = new DataContext())
-                {
-                    var existingImages = context.Images.Where(i => i.ProductId == entity.Id).ToList();
-                    context.Images.RemoveRange(existingImages); // Eski resimleri sil
-                    await context.SaveChangesAsync();
-                }
                 foreach (var file in files)
                 {
-
-                    var image = new Image
-                    {
-                        ImageUrl = file.FileName,
-                        ProductId = entity.Id
-                    };
+                    Image image = new Image();
+                    image.ImageUrl = file.FileName;
 
                     entity.Images.Add(image);
 
-                    string uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                    var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\img", uniqueFileName);
+                    var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\img", file.FileName);
 
                     using (var stream = new FileStream(path, FileMode.Create))
                     {
@@ -188,14 +179,9 @@ namespace ETRADE.WebUI.Controllers
                     }
                 }
             }
+
             _productService.Update(entity, categoryIds);
 
-            // Yeni resimleri veritabanına ekle
-            using (var context = new DataContext())
-            {
-                context.Images.AddRange(entity.Images);
-                await context.SaveChangesAsync();
-            }
             return RedirectToAction("ProductList");
         }
 
@@ -203,12 +189,15 @@ namespace ETRADE.WebUI.Controllers
         public IActionResult DeleteProduct(int productId)
         {
             var product = _productService.GetById(productId);
+
             if (product != null)
             {
                 _productService.Delete(product);
             }
+
             return RedirectToAction("ProductList");
         }
+
         public IActionResult CategoryList()
         {
             return View(new CategoryListModel() { Categories = _categoryService.GetAll() });
@@ -245,17 +234,33 @@ namespace ETRADE.WebUI.Controllers
             return RedirectToAction("CategoryList");
         }
 
+        [HttpPost]
+        public IActionResult DeleteCategory(int categoryId)
+        {
+            var entity = _categoryService.GetById(categoryId);
+            _categoryService.Delete(entity);
+
+            return RedirectToAction("CategoryList");
+        }
+
+        public IActionResult CreateCategory()
+        {
+            return View(new CategoryModel());
+        }
 
 
+        [HttpPost]
+        public IActionResult CreateCategory(CategoryModel model)
+        {
+            var entity = new Category()
+            {
+                Name = model.Name
+            };
 
+            _categoryService.Create(entity);
 
-
-
-
-
-
-
+            return RedirectToAction("CategoryList");
+        }
 
     }
-
 }

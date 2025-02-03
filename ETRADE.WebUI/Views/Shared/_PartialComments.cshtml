@@ -4,13 +4,15 @@
 
 @{
     var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var usernames = ViewBag.UserNames as Dictionary<string, string> ?? new Dictionary<string, string>();
+    var isAdmin = User.IsInRole("admin");
 }
 
 @if (User.Identity.IsAuthenticated)
 {
     <div class="row">
         <div class="col-md-12">
-            <hr/>
+            <hr />
         </div>
         <div class="row">
             <div class="col-md-12">
@@ -24,34 +26,39 @@
         </div>
     </div>
 }
-@if(Model.Count > 0)
+@if (Model.Count > 0)
 {
     @foreach (var comment in Model)
     {
-        <div class="d-flex">
-            <div class="flex-grow-1 ms-1 mt-3">
-                <h6 class="col-md-12">
-                    <span>Anonymous</span>
-                    <small class="text-muted">
-                        <i>@comment.CreateOn.ToString("ddd, dd MMMM yyyy")</i>
-                    </small>
-                </h6>
-                <span class="col-md-10" id="comment_text_@comment.Id" contenteditable="false">
-                    @comment.Text
-                </span>
-                @if(User.Identity.IsAuthenticated && userId == comment.UserId)
-                {
-                    <span class="col-md-2 float-end">
-                        <button type="button" class="btn btn-warning btn-xs" data-edit-mode="false" onclick="doComment(this,'edit_clicked',@comment.Id,'#comment_text_@comment.Id')">
-                            <span class="fas fa-edit fa-xs"></span>
-                        </button>
-                        <button type="button" class="btn btn-warning btn-xs" data-edit-mode="false" onclick="doComment(this,'delete_clicked',@comment.Id,'#comment_text_@comment.Id')">
-                            <span class="fas fa-trash fa-xs"></span>
-                        </button>
+        // Yorumun geçerli bir kullanıcıya ait olup olmadığını kontrol et
+        if (usernames.ContainsKey(comment.UserId))
+        {
+            <div class="d-flex">
+                <div class="flex-grow-1 ms-1 mt-3">
+                    <h6 class="col-md-12">
+                        <span>@usernames[comment.UserId]</span>
+                        <small class="text-muted">
+                            <i>@comment.CreateOn.ToString("ddd, dd MMMM yyyy HH:mm:ss")</i>
+                        </small>
+                    </h6>
+                    <span class="col-md-10" id="comment_text_@comment.Id" contenteditable="false">
+                        @comment.Text
                     </span>
-                }
+                    @if (User.Identity.IsAuthenticated && userId == comment.UserId)
+                    {
+                        <span class="col-md-2 float-end">
+                            <button type="button" class="btn btn-warning btn-xs" data-edit-mode="false" onclick="doComment(this,'edit_clicked',@comment.Id,'#comment_text_@comment.Id')">
+                                <span class="fas fa-edit fa-xs"></span>
+                            </button>
+                            <button type="button" class="btn btn-warning btn-xs" data-edit-mode="false" onclick="doComment(this,'delete_clicked',@comment.Id,'#comment_text_@comment.Id')">
+                                <span class="fas fa-trash fa-xs"></span>
+                            </button>
+                        </span>
+                    }
+                    
+                </div>
             </div>
-        </div>
+        }
     }
 }
 else

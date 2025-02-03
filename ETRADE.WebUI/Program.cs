@@ -1,4 +1,4 @@
-using ETICARET.DataAccess.Concrete.EfCore;
+using ETRADE.DataAccess.Concrete.EfCore;
 using ETRADE.Business.Abstract;
 using ETRADE.Business.Concrete;
 using ETRADE.DataAccess.Abstract;
@@ -150,5 +150,7 @@ app.UseEndpoints(endpoints =>
 );
 
 
-SeedIdentity.Seed(userManager, roleManager, builder.Configuration).Wait();
+SeedIdentity.Seed(userManager, roleManager, app.Configuration).Wait();
+
 app.Run();
+  

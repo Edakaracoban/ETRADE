@@ -24,7 +24,7 @@ namespace ETRADE.DataAccess.Concrete.EfCore //sepetle ilgili CRUD İŞLEMLERİ
         {
             using (var context = new DataContext())
             {
-                var cmd = @"delete from CartItem where CartId=@p0 and ProductId=p1";
+                var cmd = @"delete from CartItem where CartId=@p0 and ProductId=@p1";
                 context.Database.ExecuteSqlRaw(cmd, cartId, productId);
             }
         }

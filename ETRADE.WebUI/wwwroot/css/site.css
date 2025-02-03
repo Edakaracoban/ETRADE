@@ -109,3 +109,99 @@ body {
 }
 
 
+
+.container {
+    text-align: center;
+    font-family: Arial, sans-serif;
+   
+}
+
+.error-message {
+    display: inline-block;
+    padding: 20px;
+    margin-top: 200px;
+}
+
+/* Genel stil */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+h1, h4 {
+    color: #007bff;
+}
+
+hr {
+    border-top: 1px solid #007bff;
+}
+
+/* Form stil */
+.form-control {
+    border-radius: 0.25rem;
+    border: 1px solid #ced4da;
+}
+
+.form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.custom-control-input:checked~.custom-control-label::before {
+    border-color: #007bff;
+    background-color: #007bff;
+}
+
+.custom-checkbox .custom-control-label::before {
+    border-radius: 0.25rem;
+}
+
+/* Buton stil */
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    border-radius: 0.25rem;
+    padding: 10px 20px;
+    font-size: 1.1rem;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+}
+
+/* Kart stil */
+.list-group-item {
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    margin-bottom: 10px;
+    border-radius: 0.25rem;
+}
+
+.list-group-item h6 {
+    margin-bottom: 0.5rem;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}
+
+/* Ödeme kutusu stil */
+#payment-box {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 0.25rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+/* Responsive tasarým */
+@media (max-width: 768px) {
+    .col-md-8, .col-md-4 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    .btn-primary {
+        width: 100%;
+    }
+}

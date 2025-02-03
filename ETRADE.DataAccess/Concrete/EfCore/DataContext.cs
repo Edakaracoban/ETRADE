@@ -18,6 +18,7 @@ namespace ETRADE.DataAccess.Concrete.EfCore
         {
             modelBuilder.Entity<ProductCategory>().HasKey(c => new { c.ProductId, c.CategoryId });
         }
+        
 
         public DbSet<Product> Products { get; set; } // tablolarda primary keye gelen id olmak zorundadır.
         public DbSet<Category> Categories { get; set; }

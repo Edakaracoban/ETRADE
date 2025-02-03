@@ -25,5 +25,9 @@ namespace ETRADE.WebUI.Controllers
                 Products = products
             });
         }
+        public IActionResult NotFound()
+        {
+            return View();
+        }
     }
 }

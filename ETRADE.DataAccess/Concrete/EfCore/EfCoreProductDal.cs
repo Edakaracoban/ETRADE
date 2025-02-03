@@ -17,7 +17,8 @@ namespace ETRADE.DataAccess.Concrete.EfCore
             using (var context = new DataContext())
             {
                 var products = context.Products.AsQueryable();
-                if (!string.IsNullOrEmpty(category))
+
+                if (!string.IsNullOrEmpty(category) && category !="all")
                 {
                     products = products
                             .Include(i => i.ProductCategories)
@@ -26,7 +27,13 @@ namespace ETRADE.DataAccess.Concrete.EfCore
 
                     return products.Count();
                 }
-                return 0;
+                else
+                {
+                    return products.Include(i => i.ProductCategories)
+                        .ThenInclude(i => i.Category)
+                        .Where (i => i.ProductCategories.Any())
+                        .Count();
+                }
             }
         }
 
@@ -49,7 +56,7 @@ namespace ETRADE.DataAccess.Concrete.EfCore
             using (var context = new DataContext())
             {
                 var products = context.Products.Include("Images").AsQueryable();
-                if (!string.IsNullOrEmpty(category))
+                if (!string.IsNullOrEmpty(category) && category !="all")
                 {
                     products = products
                             .Include(i => i.ProductCategories)
@@ -64,43 +71,41 @@ namespace ETRADE.DataAccess.Concrete.EfCore
             using (var context = new DataContext())
             {
                 var product = context.Products
-                    .Include(p => p.ProductCategories)
-                    .Include(p => p.Images)
-                    .FirstOrDefault(p => p.Id == entity.Id);
+                    .Include(i => i.Images)
+                    .Include(i => i.ProductCategories)
+                    .FirstOrDefault(i => i.Id == entity.Id);
 
                 if (product != null)
                 {
+                    product.Price = entity.Price;
                     product.Name = entity.Name;
                     product.Description = entity.Description;
-                    product.Price = entity.Price;
 
-                    product.ProductCategories = categoryIds.Select(catId => new ProductCategory
+                    // Ürün kategorilerini güncelle
+                    product.ProductCategories = categoryIds.Select(catId => new ProductCategory()
                     {
                         ProductId = entity.Id,
-                        CategoryId = catId
+                        CategoryId = catId,
                     }).ToList();
 
-                    // Eski resimleri veritabanından sil
-                    var oldImages = context.Images.Where(i => i.ProductId == entity.Id).ToList();
-                    if (oldImages.Any())
+                    // Eski resimleri koruyarak yalnızca yeni resimleri ekle
+                    var existingImageIds = product.Images.Select(i => i.Id).ToList();
+
+                    // Yeni resimleri ekle (mevcut olanları atla)
+                    foreach (var newImage in entity.Images)
                     {
-                        context.Images.RemoveRange(oldImages);
-
-                    }
-
-
-                    // Yeni resimleri veritabanına ekle
-                    if (entity.Images.Any())
-                    {
-                        foreach (var image in entity.Images)
+                        if (!existingImageIds.Contains(newImage.Id))
                         {
-                            context.Images.Add(image); 
+                            product.Images.Add(newImage);
                         }
                     }
-                    context.SaveChanges(); 
+
+
+                    context.SaveChanges();
                 }
             }
         }
+
         public override void Delete(Product entity)
         {
             using (var context = new DataContext())
