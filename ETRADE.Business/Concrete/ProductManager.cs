@@ -54,7 +54,7 @@ namespace ETRADE.Business.Concrete
 
         public void Update(Product entity, int[] categoryIds)
         {
-            _productDal.Update(entity); 
+            _productDal.Update(entity,categoryIds); 
         }
     }
 }
