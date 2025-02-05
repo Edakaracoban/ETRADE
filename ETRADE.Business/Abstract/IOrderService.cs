@@ -9,7 +9,7 @@ namespace ETRADE.Business.Abstract
 {
     public interface IOrderService
     {
-        List<Order> GetOrders(string userId);
+        List<Order> GetOrders(string userId, string UserName);
         void Create(Order entity);
 
     }

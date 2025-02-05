@@ -3,8 +3,9 @@
     ViewData["title"] = "Orders";
 }
 
-<h1>My Orders</h1>
-<hr/>
+<h1>All Orders</h1>
+<hr />
+
 @foreach (var order in Model)
 {
     <table class="table table-sm mb-5">
@@ -28,15 +29,16 @@
                     <td>
                         @orderItem.Price
                     </td>
-                <td>
+                    <td>
                         @orderItem.Quantity
-                </td>
+                    </td>
                 </tr>
             }
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="2"><strong>Customer Name:</strong>@order.FirstName</td>
+                <td colspan="2"><strong>Customer Name:</strong></td>
+                <td>@order.FirstName @order.LastName</td>
                 <td></td>
                 <td rowspan="7" class="ps-4"><h4>Total: </h4> @order.TotalPrice().ToString("c")</td>
             </tr>

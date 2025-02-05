@@ -22,9 +22,9 @@ namespace ETRADE.Business.Concrete
             _orderDal.Create(entity);
         }
 
-        public List<Order> GetOrders(string userId)
+        public List<Order> GetOrders(string userId, string UserName)
         {
-           return _orderDal.GetOrders(userId);
+           return _orderDal.GetOrders(userId,UserName);
         }
     }
 }

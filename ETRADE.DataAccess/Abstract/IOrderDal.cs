@@ -9,6 +9,6 @@ namespace ETRADE.DataAccess.Abstract
 {
     public interface IOrderDal:IRepository<Order>
     {
-        List<Order> GetOrders(string userId); //Kullanıcının idisine göre tüm siparişleri liste halinde döndürecek
+        List<Order> GetOrders(string userId, string UserName); //Kullanıcının idisine göre tüm siparişleri liste halinde döndürecek
     }
 }

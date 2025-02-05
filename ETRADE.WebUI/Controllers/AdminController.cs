@@ -18,13 +18,15 @@ namespace ETRADE.WebUI.Controllers
         private ICategoryService _categoryService;
         private UserManager<ApplicationUser> _userManager;
         private RoleManager<IdentityRole> _roleManager;
+        private IOrderService _orderService;
 
-        public AdminController(IProductService productService, ICategoryService categoryService, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        public AdminController(IProductService productService, ICategoryService categoryService, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IOrderService orderService)
         {
             _productService = productService;
             _categoryService = categoryService;
             _userManager = userManager;
             _roleManager = roleManager;
+            _orderService = orderService;
         }
 
 
@@ -261,6 +263,49 @@ namespace ETRADE.WebUI.Controllers
 
             return RedirectToAction("CategoryList");
         }
+
+        public IActionResult GetOrder()
+        {
+            var userId = _userManager.GetUserId(User); 
+            var UserName = _userManager.GetUserName(User);
+
+            var orders = _orderService.GetOrders(userId,UserName);
+
+            var orderListModel = new List<OrderListModel>();
+
+            foreach (var order in orders)
+            {
+                var orderModel = new OrderListModel()
+                {
+                    OrderId = order.Id,
+                    Address = order.Address,
+                    OrderNumber = order.OrderNumber,
+                    OrderDate = order.OrderDate,
+                    OrderState = order.OrderState,
+                    PaymentTypes = order.PaymentTypes,
+                    OrderNote = order.OrderNote,
+                    City = order.City,
+                    Email = order.Email,
+                    FirstName = order.FirstName,
+                    LastName = order.LastName,
+                    Phone = order.Phone,
+                    OrderItems = order.OrderItems.Select(x => new OrderItemModel()
+                    {
+                        OrderItemId = x.Id,
+                        Name = x.Product.Name,
+                        Price = x.Price,
+                        Quantity = x.Quantity,
+                        ImageUrl = x.Product.Images[0].ImageUrl
+                    }).ToList()
+                };
+
+                orderListModel.Add(orderModel);
+            }
+
+            return View(orderListModel);
+        }
+
+
 
     }
 }
