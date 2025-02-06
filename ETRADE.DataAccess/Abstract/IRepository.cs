@@ -17,3 +17,5 @@ namespace ETRADE.DataAccess.Abstract
         void Delete(T entity);
     }
 }
+
+//data ile ilgili manipülasyonları dataaccess yapar.

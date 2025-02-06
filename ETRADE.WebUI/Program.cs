@@ -153,4 +153,12 @@ app.UseEndpoints(endpoints =>
 SeedIdentity.Seed(userManager, roleManager, app.Configuration).Wait();
 
 app.Run();
-  
+
+
+
+
+//sýrasýyla;
+//1.Entities
+//2.Data Access
+//3.Business
+//4.WebUi katmanlarý oluþturuldu.

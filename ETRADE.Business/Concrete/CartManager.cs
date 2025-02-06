@@ -11,7 +11,7 @@ namespace ETRADE.Business.Concrete
 {
     public class CartManager : ICartService
     {
-        private ICartDal _cartDal;
+        private ICartDal _cartDal; // Dependency injection ile data accesteki somut sınıfları dahil ettik.
 
         public CartManager(ICartDal cartDal)
         {

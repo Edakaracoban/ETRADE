@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ETRADE.DataAccess.Concrete.EfCore
 {
-    public class SeedDatabase
+    public class SeedDatabase  // webui de programcs içinde tetikleniyor.
     {
         public static void Seed()
         {
