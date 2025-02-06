@@ -144,12 +144,6 @@ namespace ETRADE.WebUI.Controllers
         [HttpPost]
         public async Task<IActionResult> EditProduct(ProductModel model, List<IFormFile> files, int[] categoryIds)
         {
-            if (categoryIds == null || categoryIds.Length == 0)
-            {
-                ModelState.AddModelError("", "Lütfen en az bir kategori seçiniz.");
-                ViewBag.Categories = _categoryService.GetAll();
-                return View(model); 
-            }
 
             var entity = _productService.GetById(model.Id);
           
@@ -163,6 +157,8 @@ namespace ETRADE.WebUI.Controllers
             entity.Description = model.Description;
             entity.Price = model.Price;
             entity.Images = model.Images;
+
+          
 
             if (files != null && files.Count > 0)
             {

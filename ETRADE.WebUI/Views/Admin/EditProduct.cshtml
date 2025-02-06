@@ -7,10 +7,21 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $("#fileImage").change(function (e) {
-            $("#imgPreview").show()
-            $("#imgPreview").attr("src",URL.createObjectURL(e.target.files[0]))
-        })
-    })
+            $("#imgPreview").show();
+            $("#imgPreview").attr("src", URL.createObjectURL(e.target.files[0]));
+        });
+        $("form").submit(function (e) {
+            if ($("input[name='categoryIds']:checked").length === 0) {
+                e.preventDefault(); 
+                alert("Lütfen en az bir kategori seçiniz."); 
+            }
+        });
+    });
+</script>
+<script type="text/javascript">
+    document.addEventListener('contextmenu', function (e) {
+        e.preventDefault();  // Sağ tıklama menüsünü engelle
+    });
 </script>
 @section Scripts {
     <script src="~/modules/jquery-validation/dist/jquery.validate.js"></script>
@@ -70,7 +81,7 @@
                            type="checkbox"
                            class="form-check-input"
                            value="@item.Id"
-                    @(Model.SelectedCategories.Any(i => i.Id == item.Id) ? "checked" : "") />
+                    @(Model.SelectedCategories != null && Model.SelectedCategories.Any(i => i.Id == item.Id) ? "checked" : "") />
                     <label class="form-check-label" for="category@(item.Id)">@item.Name</label>
 
                 </div>
