@@ -13,7 +13,7 @@ namespace ETRADE.WebUI.TagHelpers
         {
             output.TagName = "div";
 
-            StringBuilder stringBuilder = new StringBuilder();
+            StringBuilder stringBuilder = new StringBuilder(); // string birleştirme işlemi için kullanılır.
 
             stringBuilder.Append("<ul class ='pagination'>");
 
@@ -34,7 +34,7 @@ namespace ETRADE.WebUI.TagHelpers
             }
             stringBuilder.AppendFormat("</ul>");
             output.Content.SetHtmlContent(stringBuilder.ToString());
-            base.Process(context, output);
+            base.Process(context, output); // base sınıfın process metodu çalıştırılır.
         }
     }
 }

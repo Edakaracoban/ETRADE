@@ -1,48 +1,74 @@
 ﻿@model RegisterModel
 @{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "Register";
 }
 
 @section Scripts {
     <script src="~/modules/jquery-validation/dist/jquery.validate.js"></script>
     <script src="~/modules/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
 }
-<div class="text-center">
-    <h1>Register</h1>
-    <h4>Register User</h4>
-    <div class="row d-flex justify-content-center">
-        <div class="col-md-3 validation-box">
-            <div asp-validation-summary="ModelOnly" class="text-danger validation"></div>
-        </div>
-    </div>
-    <div class="row d-flex justify-content-center">
-        <div class="col-md-3">
-            <form asp-action="Register" asp-controller="Account">
-                @Html.AntiForgeryToken()
-                <div class="form-group mb-2">
-                    <input asp-for="FullName" class="form-control" placeholder="Full Name" />
-                    <span asp-validation-for="FullName" class="text-danger"></span>
-                </div>
-                <div class="form-group mb-2">
-                    <input asp-for="UserName" class="form-control" placeholder="Username" />
-                    <span asp-validation-for="UserName" class="text-danger"></span>
-                </div>
-                <div class="form-group mb-2">
-                    <input asp-for="Email" class="form-control" placeholder="Email" />
-                    <span asp-validation-for="Email" class="text-danger"></span>
-                </div>
-                <div class="form-group mb-2">
-                    <input asp-for="Password" class="form-control" placeholder="Password" />
-                    <span asp-validation-for="Password" class="text-danger"></span>
-                </div>
-                <div class="form-group mb-2">
-                    <input asp-for="RePassword" class="form-control" placeholder="RePassword" />
-                    <span asp-validation-for="RePassword" class="text-danger"></span>
-                </div>
-                <div class="form-group mt-4">
-                    <input type="submit" value="Register User" class="btn btn-primary" />
-                </div>
-            </form>
+
+<div class="container py-5">
+    <h1 class="text-center text-primary mb-4">@ViewData["Title"]</h1>
+    <h4 class="text-center mb-5">Register User</h4>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8 col-sm-12">
+            <div class="card shadow-lg p-4">
+                <form asp-action="Register" asp-controller="Account" method="post">
+                    @Html.AntiForgeryToken()
+
+               
+                    <div class="form-group mb-3">
+                        <label for="FullName" class="form-label fw-bold">Full Name</label>
+                        <input asp-for="FullName" class="form-control" id="FullName" name="FullName" placeholder="Full Name" required />
+                        <div class="invalid-feedback">
+                            <span asp-validation-for="FullName" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="UserName" class="form-label fw-bold">Username</label>
+                        <input asp-for="UserName" class="form-control" id="UserName" name="UserName" placeholder="Username" required />
+                        <div class="invalid-feedback">
+                            <span asp-validation-for="UserName" class="text-danger"></span>
+                        </div>
+                    </div>
+
+            
+                    <div class="form-group mb-3">
+                        <label for="Email" class="form-label fw-bold">Email</label>
+                        <input asp-for="Email" class="form-control" id="Email" name="Email" placeholder="Email" required />
+                        <div class="invalid-feedback">
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                 
+                    <div class="form-group mb-3">
+                        <label for="Password" class="form-label fw-bold">Password</label>
+                        <input asp-for="Password" class="form-control" id="Password" name="Password" type="password" placeholder="Password" required />
+                        <div class="invalid-feedback">
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="RePassword" class="form-label fw-bold">Confirm Password</label>
+                        <input asp-for="RePassword" class="form-control" id="RePassword" name="RePassword" type="password" placeholder="Confirm Password" required />
+                        <div class="invalid-feedback">
+                            <span asp-validation-for="RePassword" class="text-danger"></span>
+                        </div>
+                    </div>
+
+              
+                    <div class="form-group mt-4 text-center">
+                        <button type="submit" class="btn btn-primary btn-lg w-100">Register User</button>
+                    </div>
+                </form>
+
+                <div asp-validation-summary="ModelOnly" class="text-danger validation mt-3"></div>
+            </div>
         </div>
     </div>
 </div>

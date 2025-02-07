@@ -6,37 +6,47 @@
     <script src="~/modules/jquery-validation/dist/jquery.validate.js"></script>
     <script src="~/modules/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
 }
-<div class="text-center">
-    <h1>@ViewData["Title"]</h1>
-    <div class="row d-flex justify-content-center">
-        <div class="col-md-3 validation-box">
-            <div asp-validation-summary="ModelOnly" class="text-danger validation"></div>
-        </div>
-    </div>
-    <div class="row d-flex justify-content-center">
-        <div class="col-md-3">
-            <form asp-action="Manage" asp-controller="Account" method="post">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="Id" value="@Model.Id" />
-                <div class="form-group mb-2">
-                    <strong><label for="FullName">Full Name</label></strong>
-                    <input asp-for="FullName" class="form-control" id="FullName" name="FullName" value="@Model.FullName" placeholder="FullName" required />
-                    <span asp-validation-for="FullName" class="text-danger"></span>
-                </div>
-                <div class="form-group mb-2">
-                    <strong><label for="UserName">User Name</label></strong> 
-                    <input asp-for="UserName" class="form-control" id="UserName" name="UserName" value="@Model.UserName" placeholder="UserName" required />
-                    <span asp-validation-for="UserName" class="text-danger"></span>
-                </div>
-                <div class="form-group mb-2">
-                    <strong><label for="Email">Email</label></strong>
-                    <input asp-for="Email" class="form-control" id="Email" name="Email" value="@Model.Email" placeholder="Email" required />
-                    <span asp-validation-for="Email" class="text-danger"></span>
-                </div>
-                <div class="form-group mt-4">
-                    <input type="submit" value="Edit Register" class="btn btn-danger" />
-                </div>
-            </form>
+<div class="container py-5">
+    <h1 class="text-center text-primary mb-4">@ViewData["Title"]</h1>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8 col-sm-12">
+            <div class="card shadow-lg p-4">
+                <form asp-action="Manage" asp-controller="Account" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="Id" value="@Model.Id" />
+
+                    <div class="form-group mb-3">
+                        <label for="FullName" class="form-label fw-bold">Full Name</label>
+                        <input asp-for="FullName" class="form-control" id="FullName" name="FullName" value="@Model.FullName" placeholder="Full Name" required />
+                        <div class="invalid-feedback">
+                            <span asp-validation-for="FullName" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="UserName" class="form-label fw-bold">User Name</label>
+                        <input asp-for="UserName" class="form-control" id="UserName" name="UserName" value="@Model.UserName" placeholder="User Name" required />
+                        <div class="invalid-feedback">
+                            <span asp-validation-for="UserName" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="Email" class="form-label fw-bold">Email</label>
+                        <input asp-for="Email" class="form-control" id="Email" name="Email" value="@Model.Email" placeholder="Email" required />
+                        <div class="invalid-feedback">
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-4 text-center">
+                        <button type="submit" class="btn btn-danger btn-lg w-100">Edit Register</button>
+                    </div>
+                </form>
+
+                <div asp-validation-summary="ModelOnly" class="text-danger validation mt-3"></div>
+            </div>
         </div>
     </div>
 </div>
