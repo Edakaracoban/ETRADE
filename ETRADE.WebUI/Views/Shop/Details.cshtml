@@ -36,7 +36,10 @@
         <br/>
         @foreach (var category in Model.Categories)
         {
-            <a href="#" class="btn btn-link p-0 mb-3">@category.Name</a>
+            <a href="#" class="btn btn-link p-0 mb-3" style="text-decoration: none; color: #007bff; font-weight: 500; transition: color 0.3s ease;" onmouseover="this.style.color='#0056b3'" onmouseout="this.style.color='#007bff'">
+                KATEGORİ : @category.Name.ToUpper()
+            </a>
+
         }
         <div class="mb-3">
             <h4 class="text-primary mb-3">@Model.Product.Price TL</h4>
@@ -68,8 +71,8 @@
             <button class="nav-link" id="home-tab" data-bs-toggle="tab" data-bs-target="#comment" type="button" role="tab" aria-controls="home" aria-selected="true">Comments</button>
         </li>
     </ul>
-    <div class="tab-content" id="myTabContent">
-        <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="home-tab">
+    <div class="tab-content" id="myTabContent"><br />
+        <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="home-tab" style="font-style: italic;">
             @Html.Raw(Model.Product.Description)
         </div>
         <div class="tab-pane fade" id="comment" role="tabpanel" aria-labelledby="profile-tab" data-product-id="@Model.Product.Id" data-url="@Url.Action(action:"ShowProductComments",controller:"Comment",new { id = Model.Product.Id})">

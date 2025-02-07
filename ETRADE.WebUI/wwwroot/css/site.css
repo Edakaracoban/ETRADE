@@ -294,3 +294,22 @@ img {
     -ms-user-select: none; /* Internet Explorer */
     user-select: none; /* Standart */
 }
+
+/* Ekstra responsive iyileþtirmeler için */
+@media (max-width: 767px) {
+    .table th, .table td {
+        font-size: 12px;
+    }
+
+    .table img {
+        max-width: 60px; /* Resim boyutunu küçültme */
+    }
+
+    .ps-4 {
+        padding-left: 1.5rem !important; /* 'ps-4' padding düzenlemesi */
+    }
+
+    h4 {
+        font-size: 16px; /* Daha küçük baþlýk fontu */
+    }
+}
